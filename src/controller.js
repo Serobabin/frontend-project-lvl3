@@ -1,7 +1,7 @@
 import axios from 'axios';
 import _ from 'lodash';
 import {
-  getPosts, getFeed, parse, validate, allOrigins,
+  getPosts, getFeed, parse, validate, allOrigins, makePostsPreview,
 } from './auxiliaryFunctions';
 
 export default (state, wathchedState) => (e) => {
@@ -28,6 +28,8 @@ export default (state, wathchedState) => (e) => {
       wathchedStateHandler.rssForm.urlList.push(state.rssForm.url);
       wathchedStateHandler.rss.feedList.push(feed);
       wathchedStateHandler.rss.postList = [...posts, ...state.rss.postList];
+      const postsPreview = makePostsPreview(posts);
+      wathchedStateHandler.uiState.postsPreview = [...state.uiState.postsPreview, ...postsPreview];
     })
     .catch((err) => {
       if (!(_.has(err, 'errors'))) {

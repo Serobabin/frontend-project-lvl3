@@ -34,6 +34,9 @@ export default async () => {
       feedList: [],
       postList: [],
     },
+    uiState: {
+      postsPreview: [],
+    },
   };
 
   const wathchedState = view(state, elements, i18nInstance);

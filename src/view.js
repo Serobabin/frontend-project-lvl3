@@ -27,6 +27,7 @@ const renderFeeds = (state, elements, i18nInstance) => {
 };
 
 const renderPosts = (state, elements, i18nInstance) => {
+  const renderPostsState = state;
   const { postContainer } = elements;
   if (!postContainer.querySelector('.card-body')) {
     const cardBorder = `<div class="card border-0"><div class="card-body"><h2 class="card-title h4">${i18nInstance.t('containers.posts')}</h2></div></div>`;
@@ -41,6 +42,12 @@ const renderPosts = (state, elements, i18nInstance) => {
     const button = document.createElement('button');
     button.addEventListener('click', (e) => {
       e.preventDefault();
+      renderPostsState.uiState.postsPreview.forEach((postPreview) => {
+        const postPrev = postPreview;
+        if (postPrev.postId === post.id) {
+          postPrev.state = 'viewed';
+        }
+      });
       button.previousElementSibling.classList.add('fw-normal', 'link-secondary');
       const { fade } = elements;
       fade.classList.add('show');

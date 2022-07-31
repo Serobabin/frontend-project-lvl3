@@ -3,6 +3,12 @@ import _ from 'lodash';
 
 export const allOrigins = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
 
+export const makePostsPreview = (posts) => posts.map((post) => {
+  const postId = post.id;
+  const state = 'not viewed';
+  return { postId, state };
+});
+
 export const getNewPosts = (posts, contributedPosts) => {
   const sortedcontributedPosts = _.sortBy(contributedPosts, ({ pubDate }) => Date.parse(pubDate));
   const newestContributedPost = sortedcontributedPosts[sortedcontributedPosts.length - 1];
