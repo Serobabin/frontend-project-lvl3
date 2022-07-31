@@ -3,7 +3,8 @@ export default {
     errors: {
       validationErrors: {
         notUnique: 'RSS уже существует',
-        notValid: 'Ссылка должна быть валидным url',
+        notValid: 'Ссылка должна быть валидным URL',
+        unfilled: 'Не должно быть пустым',
       },
       parsingErrors: {
         parsingFailed: 'Ресурс не содержит валидный RSS',
@@ -13,7 +14,7 @@ export default {
       },
     },
     posts: {
-      buttons: 'Принять',
+      buttons: 'Просмотр',
     },
     rssForm: {
       success: 'Rss успешно загружен',

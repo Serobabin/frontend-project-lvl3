@@ -1,4 +1,5 @@
 import onChange from 'on-change';
+import { setAttributes } from './auxiliaryFunctions';
 
 const renderErrors = (state, elements, i18nInstance) => {
   const formFeedback = elements.feedback;
@@ -24,6 +25,7 @@ const renderFeeds = (state, elements, i18nInstance) => {
   feedList.innerHTML = liList.join('\n');
   feedContainer.append(feedList);
 };
+
 const renderPosts = (state, elements, i18nInstance) => {
   const { postContainer } = elements;
   if (!postContainer.querySelector('.card-body')) {
@@ -51,17 +53,13 @@ const renderPosts = (state, elements, i18nInstance) => {
     });
     button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
     button.textContent = i18nInstance.t('posts.buttons');
-    button.setAttribute('type', 'button');
-    button.setAttribute('data-id', `${post.id}`);
-    button.setAttribute('data-bs-toggle', 'modal');
-    button.setAttribute('data-bs-target', '#modal');
+    const buttonsAttributes = [['type', 'button'], ['data-id', `${post.id}`], ['data-bs-toggle', 'modal'], ['data-bs-target', '#modal']];
+    setAttributes(button, buttonsAttributes);
     const a = document.createElement('a');
     a.classList.add('fw-bold');
-    a.setAttribute('href', `${post.link}`);
-    a.setAttribute('data-id', `${post.id}`);
-    a.setAttribute('target', '_blank');
-    a.setAttribute('rel', 'noopener noreferer');
     a.textContent = post.title;
+    const aAttributes = [['href', `${post.link}`], ['data-id', `${post.id}`], ['target', '_blank'], ['rel', 'noopener noreferer']];
+    setAttributes(a, aAttributes);
     li.append(a, button);
     postList.append(li);
   });
@@ -81,10 +79,18 @@ const renderRssForm = (elements, i18nInstance) => {
 };
 
 const render = (elements, i18nInstance, state) => (path, value) => {
-  switch (value) {
-    case 'loaded': renderFeeds(state, elements, i18nInstance); renderPosts(state, elements, i18nInstance); renderRssForm(elements, i18nInstance);
+  switch (path) {
+    case 'processState':
+      if (value === 'loaded') {
+        renderRssForm(elements, i18nInstance);
+      }
+      if (value === 'failed') {
+        renderErrors(state, elements, i18nInstance);
+      }
       break;
-    case 'failed': renderErrors(state, elements, i18nInstance);
+    case 'rss.feedList': renderFeeds(state, elements, i18nInstance);
+      break;
+    case 'rss.postList': renderPosts(state, elements, i18nInstance);
       break;
     default:
       break;
