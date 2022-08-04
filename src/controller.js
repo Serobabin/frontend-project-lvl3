@@ -26,10 +26,10 @@ export default (state, wathchedState) => (e) => {
       const feedId = feed.id;
       const posts = getPosts(doc, feedId);
       wathchedStateHandler.rssForm.urlList.push(state.rssForm.url);
-      wathchedStateHandler.rss.feedList.push(feed);
-      wathchedStateHandler.rss.postList = [...posts, ...state.rss.postList];
+      wathchedStateHandler.rss.feedList.unshift(feed);
       const postsPreview = makePostsPreview(posts);
       wathchedStateHandler.uiState.postsPreview = [...state.uiState.postsPreview, ...postsPreview];
+      wathchedStateHandler.rss.postList = [...posts, ...state.rss.postList];
     })
     .catch((err) => {
       if (!(_.has(err, 'errors'))) {

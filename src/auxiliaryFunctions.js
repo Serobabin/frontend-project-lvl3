@@ -21,6 +21,7 @@ export const getNewPosts = (posts, contributedPosts) => {
     return acc;
   }, []);
 };
+
 export const getFeed = (doc) => {
   const feed = {
     id: _.uniqueId(),
@@ -30,6 +31,7 @@ export const getFeed = (doc) => {
   };
   return feed;
 };
+
 export const getPosts = (doc, feedId) => {
   const posts = [];
   const items = doc.querySelectorAll('item');
@@ -46,9 +48,11 @@ export const getPosts = (doc, feedId) => {
   });
   return posts;
 };
+
 function UserException(message) {
   this.errors = [message];
 }
+
 export const parse = (rawData) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(rawData, 'application/xml');
@@ -57,6 +61,7 @@ export const parse = (rawData) => {
   }
   return doc;
 };
+
 export const validate = (link, linksList) => {
   yup.setLocale({
     mixed: {
@@ -70,6 +75,7 @@ export const validate = (link, linksList) => {
   const schema = yup.string().required().url().notOneOf(linksList);
   return schema.validate(link);
 };
+
 export const setAttributes = (el, attributes) => {
   attributes.forEach(([key, value]) => {
     el.setAttribute(key, value);
