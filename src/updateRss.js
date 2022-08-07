@@ -40,8 +40,6 @@ const updateRss = (urlList, state, wathchedState) => {
         }
       });
   };
-  if (urlList.length > 0) {
-    makeUpdate(urlList, state, wathchedState);
-  }
+  makeUpdate(urlList, state, wathchedState);
 };
 export default updateRss;
