@@ -1,7 +1,7 @@
 import axios from 'axios';
 import _ from 'lodash';
 import {
-  getPosts, getFeed, parse, validate, allOrigins, makePostsPreview,
+  parse, validate, allOrigins, makePostsPreview,
 } from './auxiliaryFunctions';
 
 export default (state, wathchedState) => (e) => {
@@ -13,23 +13,26 @@ export default (state, wathchedState) => (e) => {
   wathchedStateHandler.rssForm.url = data;
   validate(state.rssForm.url, state.rssForm.urlList)
     .then((url) => {
-      wathchedStateHandler.rssForm.urlList.push(url);
       wathchedStateHandler.rssForm.errors = {};
       wathchedStateHandler.processState = 'loading';
-      return url;
-    })
-    .then((url) => axios.get(`${allOrigins}${encodeURIComponent(url)}`))
-    .then((response) => parse(response.data.contents))
-    .then((doc) => {
-      wathchedStateHandler.processState = 'loaded';
-      const feed = getFeed(doc);
-      const feedId = feed.id;
-      const posts = getPosts(doc, feedId);
-      wathchedStateHandler.rssForm.urlList.push(state.rssForm.url);
-      wathchedStateHandler.rss.feedList.unshift(feed);
-      const postsPreview = makePostsPreview(posts);
-      wathchedStateHandler.uiState.postsPreview = [...state.uiState.postsPreview, ...postsPreview];
-      wathchedStateHandler.rss.postList = [...posts, ...state.rss.postList];
+      return axios.get(`${allOrigins}${encodeURIComponent(url)}`)
+        .then((response) => {
+          const [feed, posts] = parse(response.data.contents);
+          wathchedStateHandler.processState = 'loaded';
+          wathchedStateHandler.rssForm.urlList.push(state.rssForm.url);
+          feed.id = _.uniqueId();
+          const selectedFeedId = feed.id;
+          wathchedStateHandler.rss.feedList.unshift(feed);
+          posts.forEach((el) => {
+            const post = el;
+            post.id = _.uniqueId();
+            post.feedId = selectedFeedId;
+          });
+          const postsPreview = makePostsPreview(posts);
+          wathchedStateHandler.uiState.postsPreview = [
+            ...state.uiState.postsPreview, ...postsPreview];
+          wathchedStateHandler.rss.postList = [...posts, ...state.rss.postList];
+        });
     })
     .catch((err) => {
       if (!(_.has(err, 'errors'))) {

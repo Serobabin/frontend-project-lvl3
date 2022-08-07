@@ -1,5 +1,5 @@
 import onChange from 'on-change';
-import { setAttributes } from './auxiliaryFunctions';
+import { setAttributes } from './auxiliaryFunctions.js';
 
 const renderModal = (selectedPostId, state, elements) => {
   const data = state.rss.postList.filter((el) => el.id === selectedPostId)[0];
@@ -30,34 +30,73 @@ const renderErrors = (state, elements, i18nInstance) => {
 
 const renderFeeds = (state, elements, i18nInstance) => {
   const { feedContainer } = elements;
+  let feedList;
   if (!feedContainer.querySelector('.card-body')) {
-    const cardBorder = `<div class="card border-0"><div class="card-body"><h2 class="card-title h4">${i18nInstance.t('containers.feeds')}</h2></div></div>`;
-    feedContainer.innerHTML = cardBorder;
-  }
+    const h2 = document.createElement('h2');
+    h2.classList.add('card-title', 'h4');
+    h2.textContent = i18nInstance.t('containers.feeds');
 
-  const feedList = feedContainer.querySelector('ul') ? feedContainer.querySelector('ul') : document.createElement('ul');
-  feedList.innerHTML = '';
+    const cardBody = document.createElement('div');
+    cardBody.classList.add('card-body');
+    cardBody.append(h2);
+
+    const cardBorder = document.createElement('div');
+    cardBorder.classList.add('card', 'border-0');
+    cardBorder.append(cardBody);
+
+    feedContainer.append(cardBorder);
+
+    feedList = document.createElement('ul');
+  } else {
+    feedList = feedContainer.querySelector('ul');
+    feedList.textContent = '';
+  }
   feedList.classList.add('list-group', 'border-0', 'rounded-0');
-  const liList = state.rss.feedList.map((feed) => {
-    const li = `<li class="list-group-item border-0 border-end-0"><h3 class="h6 m-0">${feed.title}</h3><p class="m-0 small text-black-50">${feed.description}</p></li>`;
-    return li;
+
+  state.rss.feedList.forEach((feed) => {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item', 'border-0', 'border-end-0');
+
+    const h3 = document.createElement('h3');
+    h3.classList.add('h6', 'm-0');
+    h3.textContent = feed.title;
+
+    const p = document.createElement('p');
+    p.classList.add('m-0', 'small', 'text-black-50');
+    p.textContent = feed.description;
+
+    li.append(h3, p);
+    feedList.append(li);
   });
-  feedList.innerHTML = liList.join('\n');
   feedContainer.append(feedList);
 };
 
 const renderPosts = (state, elements, i18nInstance, uiState) => {
   const wathchedUiState = uiState;
-
+  let postList;
   const { postContainer } = elements;
   if (!postContainer.querySelector('.card-body')) {
-    const cardBorder = `<div class="card border-0"><div class="card-body"><h2 class="card-title h4">${i18nInstance.t('containers.posts')}</h2></div></div>`;
-    postContainer.innerHTML = cardBorder;
-  }
+    const h2 = document.createElement('h2');
+    h2.classList.add('card-title', 'h4');
+    h2.textContent = i18nInstance.t('containers.posts');
 
-  const postList = postContainer.querySelector('ul') ? postContainer.querySelector('ul') : document.createElement('ul');
-  postList.innerHTML = '';
-  postList.classList.add('list-group', 'border-0', 'rounded-0');
+    const cardBody = document.createElement('div');
+    cardBody.classList.add('card-body');
+    cardBody.append(h2);
+
+    const cardBorder = document.createElement('div');
+    cardBorder.classList.add('card', 'border-0');
+    cardBorder.append(cardBody);
+
+    postContainer.append(cardBorder);
+
+    postList = document.createElement('ul');
+  } else {
+    postList = postContainer.querySelector('ul');
+    postList.textContent = '';
+  }
+  postContainer.classList.add('list-group', 'border-0', 'rounded-0');
+
   state.rss.postList.forEach((post) => {
     const postState = state.uiState.postsPreview.filter((el) => el.postId === post.id)[0].state;
     const aClassList = postState === 'not viewed';

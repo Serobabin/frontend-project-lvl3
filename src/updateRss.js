@@ -1,33 +1,47 @@
 import axios from 'axios';
+import _ from 'lodash';
 import {
-  allOrigins, parse, getFeed, getPosts, getNewPosts, makePostsPreview,
-} from './auxiliaryFunctions';
+  allOrigins, parse, getNewPosts, makePostsPreview,
+} from './auxiliaryFunctions.js';
 
-const updateRss = (state, wathchedState) => {
-  const updateRsswathchedState = wathchedState;
-  if (state.rssForm.urlList.length !== 0) {
-    state.rssForm.urlList.forEach((url) => {
-      axios.get(`${allOrigins}${encodeURIComponent(url)}`)
-        .then((response) => parse(response.data.contents))
-        .then((doc) => {
-          const feed = getFeed(doc);
-          const feedLink = feed.link;
-          const feedFromState = state.rss.feedList.filter(
-            (feedRSS) => feedRSS.link === feedLink,
-          )[0];
-          const feedId = feedFromState.id;
-          const posts = getPosts(doc, feedId);
-          const postsFromState = state.rss.postList.filter((post) => post.feedId === feedId);
-          const newPosts = getNewPosts(posts, postsFromState);
-          if (newPosts.length > 0) {
-            const postsPreview = makePostsPreview(newPosts);
-            updateRsswathchedState.uiState.postsPreview = [
-              ...state.uiState.postsPreview, ...postsPreview];
-            updateRsswathchedState.rss.postList = [...newPosts, ...state.rss.postList];
-          }
-        });
-    });
+const updateRss = (urlList, state, wathchedState) => {
+  if (urlList.length === 0) {
+    setTimeout(updateRss, 5000, state.rssForm.urlList, state, wathchedState);
   }
-  setTimeout(updateRss, 5000, state, updateRsswathchedState);
+  const makeUpdate = (lList, sstate, wwathchedState) => {
+    if (lList.length === 0) {
+      setTimeout(updateRss, 5000, sstate.rssForm.urlList, sstate, wwathchedState);
+      return;
+    }
+    const updateRsswathchedState = wwathchedState;
+    const [url, ...rest] = lList;
+    axios.get(`${allOrigins}${encodeURIComponent(url)}`)
+      .then((response) => {
+        makeUpdate(rest, sstate, wwathchedState);
+        const [feed, posts] = parse(response.data.contents);
+        const feedLink = feed.link;
+        const feedDescription = feed.description;
+        const feedsFromState = sstate.rss.feedList.filter(
+          (feedRss) => feedRss.link === feedLink && feedRss.description === feedDescription,
+        )[0];
+        const { id } = feedsFromState;
+        const temp = sstate.rss.postList.filter((post) => post.feedId === id);
+        const newPosts = getNewPosts(posts, temp);
+        if (newPosts.length > 0) {
+          newPosts.forEach((el) => {
+            const post = el;
+            post.feedId = id;
+            post.id = _.uniqueId();
+          });
+          const postsPreview = makePostsPreview(newPosts);
+          updateRsswathchedState.uiState.postsPreview = [
+            ...sstate.uiState.postsPreview, ...postsPreview];
+          updateRsswathchedState.rss.postList = [...newPosts, ...sstate.rss.postList];
+        }
+      });
+  };
+  if (urlList.length > 0) {
+    makeUpdate(urlList, state, wathchedState);
+  }
 };
 export default updateRss;

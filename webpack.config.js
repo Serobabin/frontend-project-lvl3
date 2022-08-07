@@ -28,7 +28,6 @@ module.exports = {
       template: './index.html',
     }),
     new MiniCssExtractPlugin({
-      filename: 'styles.css',
     }),
     new CleanWebpackPlugin({
       path: './dist/*.*',

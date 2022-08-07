@@ -1,18 +1,19 @@
 import i18next from 'i18next';
-import ru from '../locales/ru';
-import { viewState, viewUiState } from './view';
-import rssFormHandler from './controller';
-import updateRss from './updateRss';
+import ru from '../locales/ru.js';
+import { viewState, viewUiState } from './view.js';
+import rssFormHandler from './controller.js';
+import updateRss from './updateRss.js';
 
-export default async () => {
+export default () => {
   const i18nInstance = i18next.createInstance();
-  await i18nInstance.init({
-    lng: 'ru',
-    debug: false,
-    resources: {
-      ru,
-    },
-  });
+  i18nInstance
+    .init({
+      lng: 'ru',
+      debug: false,
+      resources: {
+        ru,
+      },
+    });
 
   const elements = {
     rssForm: document.querySelector('form'),
@@ -43,6 +44,6 @@ export default async () => {
   };
   const wathchedUiState = viewUiState(state.uiState, state, elements);
   const wathchedState = viewState(state, elements, i18nInstance, wathchedUiState);
-  updateRss(state, wathchedState);
+  updateRss(state.rssForm.urlList, state, wathchedState);
   elements.rssForm.addEventListener('submit', rssFormHandler(state, wathchedState));
 };
