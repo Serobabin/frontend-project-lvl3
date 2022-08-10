@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import _ from 'lodash';
 
 export const allOrigins = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
 
@@ -8,8 +7,6 @@ export const makePostsPreview = (posts) => posts.map((post) => {
   const state = 'not viewed';
   return { postId, state };
 });
-
-export const getNewPosts = (posts, contributedPosts) => _.differenceBy(posts, contributedPosts, 'link');
 
 export const getFeed = (doc) => {
   const feed = {
@@ -34,11 +31,7 @@ export const getPosts = (doc) => {
   });
   return posts;
 };
-/*
-function UserException(message) {
-  this.errors = [message];
-}
-*/
+
 export const parse = (rawData) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(rawData, 'application/xml');

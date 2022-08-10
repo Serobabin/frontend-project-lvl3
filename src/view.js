@@ -71,8 +71,8 @@ const renderFeeds = (state, elements, i18nInstance) => {
   feedContainer.append(feedList);
 };
 
-const renderPosts = (state, elements, i18nInstance, uiState) => {
-  const wathchedUiState = uiState;
+const renderPosts = (state, elements, i18nInstance, ws) => {
+  const wathchedUiState = ws;
   let postList;
   const { postContainer } = elements;
   if (!postContainer.querySelector('.card-body')) {
@@ -158,45 +158,26 @@ const renderRssForm = (elements, i18nInstance) => {
   feedback.textContent = i18nInstance.t('rssForm.success');
 };
 
-const renderState = (elements, i18nInstance, state, wathchedUiState) => (path, value) => {
-  switch (path) {
-    case 'processState':
-      if (value === 'loaded') {
-        renderRssForm(elements, i18nInstance);
-      }
-      if (value === 'failed') {
-        renderErrors(state, elements, i18nInstance);
-      }
-      break;
-    case 'rss.feedList': renderFeeds(state, elements, i18nInstance);
-      break;
-    case 'rss.postList': renderPosts(state, elements, i18nInstance, wathchedUiState);
-      break;
-    default:
-      break;
-  }
+export default (state, elements, i18nInstance) => {
+  const wathchedState = onChange(state, (path, value) => {
+    switch (path) {
+      case 'processState':
+        if (value === 'loaded') {
+          renderRssForm(elements, i18nInstance);
+        }
+        if (value === 'failed') {
+          renderErrors(state, elements, i18nInstance);
+        }
+        break;
+      case 'rss.feedList': renderFeeds(state, elements, i18nInstance);
+        break;
+      case 'rss.postList': renderPosts(state, elements, i18nInstance, wathchedState);
+        break;
+      case 'selectedPostId': renderModal(value, state, elements);
+        break;
+      default:
+        break;
+    }
+  });
+  return wathchedState;
 };
-
-export const viewState = (state, elements, i18nInstance, uiState) => onChange(
-  state,
-  renderState(
-    elements,
-    i18nInstance,
-    state,
-    uiState,
-  ),
-);
-
-const renderUiState = (state, elements) => (path, value) => {
-  if (path === 'selectedPostId') {
-    renderModal(value, state, elements);
-  }
-};
-
-export const viewUiState = (uiState, state, elements) => onChange(
-  uiState,
-  renderUiState(
-    state,
-    elements,
-  ),
-);
