@@ -37,7 +37,7 @@ export default () => {
         },
         uiState: {
           selectedPostId: null,
-          postsPreview: [],
+          visitedPostIds: new Set(),
         },
       };
       const wathchedState = viewState(state, elements, i18nInstance);

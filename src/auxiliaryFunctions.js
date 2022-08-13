@@ -2,12 +2,6 @@ import * as yup from 'yup';
 
 export const allOrigins = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
 
-export const makePostsPreview = (posts) => posts.map((post) => {
-  const postId = post.id;
-  const state = 'not viewed';
-  return { postId, state };
-});
-
 export const getFeed = (doc) => {
   const feed = {
     title: doc.querySelector('channel').children[0].textContent,
@@ -18,26 +12,26 @@ export const getFeed = (doc) => {
 };
 
 export const getPosts = (doc) => {
-  const posts = [];
   const items = doc.querySelectorAll('item');
-  items.forEach((item) => {
-    const obj = {
+  const list = Array.from(items);
+  return list.map((item) => {
+    const post = {
       title: item.querySelector('title').textContent,
       link: item.querySelector('link').textContent,
       description: item.querySelector('description').textContent,
       pubDate: item.querySelector('pubDate').textContent,
     };
-    posts.push(obj);
+    return post;
   });
-  return posts;
 };
 
 export const parse = (rawData) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(rawData, 'application/xml');
   if (doc.querySelector('parsererror')) {
-    /* eslint-disable-next-line */
-    throw { errors: ['errors.parsingErrors.parsingFailed'] };
+    const error = new Error();
+    error.errors = ['errors.parsingErrors.parsingFailed'];
+    throw error;
   }
   return [getFeed(doc), getPosts(doc)];
 };
