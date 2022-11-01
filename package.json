@@ -1,7 +1,8 @@
 {
   "name": "@hexlet/code",
   "version": "1.0.0",
-  "description": "[![Actions Status](https://github.com/Serobabin/frontend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/Serobabin/frontend-project-lvl3/actions)",
+  "private": true,
+  "description": "",
   "main": "index.js",
   "scripts": {
     "webpack": "webpack"
